@@ -1,3 +1,28 @@
+local player = game.Players.LocalPlayer
+local highlight
+local textLabel
+
+-- Function to make highlight and text disappear
+local function removeEffects()
+    -- Make highlight invisible
+    if player.Character and highlight then
+        highlight.OutlineTransparency = 1 -- Fully invisible outline
+        highlight.FillTransparency = 1 -- Fully invisible fill
+    end
+
+    -- Make text label invisible
+    if textLabel then
+        textLabel.TextTransparency = 1 -- Makes text invisible
+    end
+end
+
+-- Detect if player types "/endstreak" in chat
+player.Chatted:Connect(function(message)
+    if message:lower() == "/endstreak" then
+        removeEffects()
+    end
+end)
+
 -- Wait for the _G.Killstreak to be set from the external script
 while not _G.Killstreak do
     wait(1)
@@ -8,8 +33,6 @@ local killstreakNumber = _G.Killstreak
 
 -- Ensure the script only runs when _G.Killstreak is set to the desired number
 if killstreakNumber then
-    local player = game.Players.LocalPlayer
-
     -- Function to highlight the entire character
     local function highlightCharacter(character)
         if not character then return end
@@ -20,7 +43,7 @@ if killstreakNumber then
         end
 
         -- Create the highlight effect
-        local highlight = Instance.new("Highlight")
+        highlight = Instance.new("Highlight")
         highlight.Name = "PlayerHighlight"
         highlight.FillTransparency = 1 -- Fully transparent inside
         highlight.OutlineColor = Color3.fromRGB(255, 255, 0) -- Yellow outline
@@ -59,7 +82,7 @@ if killstreakNumber then
         billboard.AlwaysOnTop = true -- Ensures visibility
 
         -- Create TextLabel
-        local textLabel = Instance.new("TextLabel")
+        textLabel = Instance.new("TextLabel")
         textLabel.Size = UDim2.new(1, 0, 1, 0)
         textLabel.BackgroundTransparency = 1
         textLabel.Text = tostring(killstreakNumber) -- Display the killstreak number dynamically
