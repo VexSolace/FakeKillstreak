@@ -1,0 +1,78 @@
+-- Wait for the _G.Killstreak to be set from the external script
+while not _G.Killstreak do
+    wait(1)
+end
+
+-- Grab the killstreak number
+local killstreakNumber = _G.Killstreak
+
+-- Ensure the script only runs when _G.Killstreak is set to the desired number
+if killstreakNumber then
+    local player = game.Players.LocalPlayer
+
+    -- Function to highlight the entire character
+    local function highlightCharacter(character)
+        if not character then return end
+
+        -- Remove any existing highlights to avoid duplicates
+        if character:FindFirstChild("PlayerHighlight") then
+            character:FindFirstChild("PlayerHighlight"):Destroy()
+        end
+
+        -- Create the highlight effect
+        local highlight = Instance.new("Highlight")
+        highlight.Name = "PlayerHighlight"
+        highlight.FillTransparency = 1 -- Fully transparent inside
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 0) -- Yellow outline
+        highlight.OutlineTransparency = 0 -- Solid outline
+        highlight.Parent = character
+    end
+
+    -- Apply highlight when character is ready
+    if player.Character then
+        highlightCharacter(player.Character)
+    end
+
+    -- Reapply when character respawns
+    player.CharacterAdded:Connect(function(newCharacter)
+        highlightCharacter(newCharacter)
+    end)
+
+    -- Function to create the text label above the player's head
+    local function addTextLabel(character)
+        local head = character:FindFirstChild("Head")
+        if not head then return end
+
+        -- Remove any existing BillboardGui
+        local existingGui = head:FindFirstChild("CustomBillboard")
+        if existingGui then
+            existingGui:Destroy()
+        end
+
+        -- Create BillboardGui
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "CustomBillboard"
+        billboard.Size = UDim2.new(7, 0, 2.5, 0) -- Slightly bigger size
+        billboard.StudsOffset = Vector3.new(0, 3, 0) -- Position above head
+        billboard.Adornee = head
+        billboard.Parent = head
+        billboard.AlwaysOnTop = true -- Ensures visibility
+
+        -- Create TextLabel
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Size = UDim2.new(1, 0, 1, 0)
+        textLabel.BackgroundTransparency = 1
+        textLabel.Text = tostring(killstreakNumber) -- Display the killstreak number dynamically
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 0) -- Pure Yellow (255, 255, 0)
+        textLabel.TextScaled = true -- Ensures text scales to fit
+        textLabel.Font = Enum.Font.SourceSans -- **SourceSans font**
+        textLabel.Parent = billboard
+    end
+
+    -- Connect function to when the character spawns
+    if player.Character then
+        addTextLabel(player.Character)
+    end
+
+    player.CharacterAdded:Connect(addTextLabel)
+end
